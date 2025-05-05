@@ -1,93 +1,93 @@
-services:
-  app:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    restart: unless-stopped
-    ports:
-      - 9000:9000
-    depends_on:
-      - db
-    env_file:
-      - ./.env
-    volumes:
-      - storage:/usr/share/nginx/html/storage:rw
-      - public:/usr/share/nginx/html/public:rw
-    networks:
-      - dokploy-network
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.next-app.rule=Host(`laravel.nikasyraf.com`)
-      - traefik.http.routers.next-app.entrypoints=websecure
-      - traefik.http.routers.next-app.tls.certResolver=letsencrypt
-      - traefik.http.services.next-app.loadbalancer.server.port=9000
-  queue-worker:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    restart: unless-stopped
-    command: php artisan queue:work
-    environment:
-      IS_WORKER: "true"
-    env_file:
-      - ./.env
-    depends_on:
-      - db
-      - redis
-    volumes:
-      - storage:/usr/share/nginx/html/storage:rw
-      - public:/usr/share/nginx/html/public:rw
-    networks:
-      - dokploy-network
-  nginx:
-    image: nginx:1-alpine
-    ports:
-      # - 80:80
-      - 8080:443
-    volumes:
-      - ./nginx.conf:/etc/nginx/templates/default.conf.template
-      - storage:/usr/share/nginx/html/storage:rw
-      - public:/usr/share/nginx/html/public:ro
-    networks:
-      - dokploy-network
-  db:
-    image: bitnami/postgresql:16.3.0
-    platform: linux/amd64
-    ports:
-      - 5432:5432
-    restart: always
-    volumes:
-      - db-data:/bitnami/postgresql
-    environment:
-      - POSTGRESQL_DATABASE=${POSTGRESQL_DATABASE}
-      - POSTGRESQL_USERNAME=${POSTGRESQL_USERNAME}
-      - POSTGRESQL_PASSWORD=${POSTGRESQL_PASSWORD}
-    networks:
-      - dokploy-network
-  redis:
-    image: bitnami/redis:7.2
-    platform: linux/amd64
-    ports:
-      - 6379:6379
-    restart: always
-    volumes:
-      - redis-data:/bitnami/redis/data
-    environment:
-      - ALLOW_EMPTY_PASSWORD=no
-      - REDIS_PASSWORD=${REDIS_PASSWORD}
-      - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
-    networks:
-      - dokploy-network
+# services:
+#   app:
+#     build:
+#       context: ./backend
+#       dockerfile: Dockerfile
+#     restart: unless-stopped
+#     ports:
+#       - 9000:9000
+#     depends_on:
+#       - db
+#     env_file:
+#       - ./.env
+#     volumes:
+#       - storage:/usr/share/nginx/html/storage:rw
+#       - public:/usr/share/nginx/html/public:rw
+#     networks:
+#       - dokploy-network
+#     labels:
+#       - traefik.enable=true
+#       - traefik.http.routers.next-app.rule=Host(`laravel.nikasyraf.com`)
+#       - traefik.http.routers.next-app.entrypoints=websecure
+#       - traefik.http.routers.next-app.tls.certResolver=letsencrypt
+#       - traefik.http.services.next-app.loadbalancer.server.port=9000
+#   queue-worker:
+#     build:
+#       context: ./backend
+#       dockerfile: Dockerfile
+#     restart: unless-stopped
+#     command: php artisan queue:work
+#     environment:
+#       IS_WORKER: "true"
+#     env_file:
+#       - ./.env
+#     depends_on:
+#       - db
+#       - redis
+#     volumes:
+#       - storage:/usr/share/nginx/html/storage:rw
+#       - public:/usr/share/nginx/html/public:rw
+#     networks:
+#       - dokploy-network
+#   nginx:
+#     image: nginx:1-alpine
+#     ports:
+#       # - 80:80
+#       - 8080:443
+#     volumes:
+#       - ./nginx.conf:/etc/nginx/templates/default.conf.template
+#       - storage:/usr/share/nginx/html/storage:rw
+#       - public:/usr/share/nginx/html/public:ro
+#     networks:
+#       - dokploy-network
+#   db:
+#     image: bitnami/postgresql:16.3.0
+#     platform: linux/amd64
+#     ports:
+#       - 5432:5432
+#     restart: always
+#     volumes:
+#       - db-data:/bitnami/postgresql
+#     environment:
+#       - POSTGRESQL_DATABASE=${POSTGRESQL_DATABASE}
+#       - POSTGRESQL_USERNAME=${POSTGRESQL_USERNAME}
+#       - POSTGRESQL_PASSWORD=${POSTGRESQL_PASSWORD}
+#     networks:
+#       - dokploy-network
+#   redis:
+#     image: bitnami/redis:7.2
+#     platform: linux/amd64
+#     ports:
+#       - 6379:6379
+#     restart: always
+#     volumes:
+#       - redis-data:/bitnami/redis/data
+#     environment:
+#       - ALLOW_EMPTY_PASSWORD=no
+#       - REDIS_PASSWORD=${REDIS_PASSWORD}
+#       - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
+#     networks:
+#       - dokploy-network
 
-volumes:
-  storage:
-  public:
-  db-data:
-  redis-data:
+# volumes:
+#   storage:
+#   public:
+#   db-data:
+#   redis-data:
 
-networks:
-  dokploy-network:
-    external: true
+# networks:
+#   dokploy-network:
+#     external: true
 
 # services:
 #   app:
@@ -174,3 +174,105 @@ networks:
 # networks:
 #   dokploy-network:
 #     external: true
+
+services:
+  app:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    # No need to expose 9000 on the host if only Nginx accesses it
+    # ports:
+    #   - 9000:9000
+    depends_on:
+      - db
+    env_file:
+      - ./.env
+    volumes:
+      - storage:/usr/share/nginx/html/storage:rw
+      - public:/usr/share/nginx/html/public:rw
+    networks:
+      - dokploy-network
+    # Remove Traefik labels from 'app' service if Nginx is handling public traffic
+    # labels:
+    #   - traefik.enable=true
+    #   - traefik.http.routers.next-app.rule=Host(`laravel.nikasyraf.com`)
+    #   - traefik.http.routers.next-app.entrypoints=websecure
+    #   - traefik.http.routers.next-app.tls.certResolver=letsencrypt
+    #   - traefik.http.services.next-app.loadbalancer.server.port=9000
+  queue-worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    command: php artisan queue:work
+    environment:
+      IS_WORKER: "true"
+    env_file:
+      - ./.env
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - storage:/usr/share/nginx/html/storage:rw
+      - public:/usr/share/nginx/html/public:rw
+    networks:
+      - dokploy-network
+  nginx:
+    image: nginx:1-alpine
+    ports:
+      # Map an internal Nginx port to be accessible by Traefik on the network
+      - 80:80 # Example: map internal Nginx port 80 to port 80 on the network
+      # Remove the host port mapping as Traefik handles public access
+      # - 8080:443
+    volumes:
+      - ./nginx.conf:/etc/nginx/templates/default.conf.template
+      - storage:/usr/share/nginx/html/storage:rw
+      - public:/usr/share/nginx/html/public:ro
+    networks:
+      - dokploy-network
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.next-app.rule=Host(`laravel.nikasyraf.com`)
+      - traefik.http.routers.next-app.entrypoints=websecure
+      - traefik.http.routers.next-app.tls.certResolver=letsencrypt
+      # Target port for Traefik to reach Nginx
+      - traefik.http.services.next-app.loadbalancer.server.port=80 # Nginx is listening on port 80 internally
+  db:
+    image: bitnami/postgresql:16.3.0
+    platform: linux/amd64
+    ports:
+      - 5432:5432
+    restart: always
+    volumes:
+      - db-data:/bitnami/postgresql
+    environment:
+      - POSTGRESQL_DATABASE=${POSTGRESQL_DATABASE}
+      - POSTGRESQL_USERNAME=${POSTGRESQL_USERNAME}
+      - POSTGRESQL_PASSWORD=${POSTGRESQL_PASSWORD}
+    networks:
+      - dokploy-network
+  redis:
+    image: bitnami/redis:7.2
+    platform: linux/amd64
+    ports:
+      - 6379:6379
+    restart: always
+    volumes:
+      - redis-data:/bitnami/redis/data
+    environment:
+      - ALLOW_EMPTY_PASSWORD=no
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
+    networks:
+      - dokploy-network
+
+volumes:
+  storage:
+  public:
+  db-data:
+  redis-data:
+
+networks:
+  dokploy-network:
+    external: true
