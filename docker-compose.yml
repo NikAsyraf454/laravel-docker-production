@@ -23,12 +23,12 @@ services:
     #   - traefik.http.routers.next-app.entrypoints=websecure
     #   - traefik.http.routers.next-app.tls.certResolver=letsencrypt
     #   - traefik.http.services.next-app.loadbalancer.server.port=9000
-  queue-worker:
+  horizon:
     build:
       context: ./backend
       dockerfile: Dockerfile
     restart: unless-stopped
-    command: php artisan queue:work
+    command: php artisan horizon
     environment:
       IS_WORKER: "true"
     env_file:
