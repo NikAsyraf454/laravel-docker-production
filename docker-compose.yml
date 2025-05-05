@@ -15,12 +15,12 @@ services:
       - public:/usr/share/nginx/html/public:rw
     networks:
       - dokploy-network
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.next-app.rule=Host(`laravel.nikasyraf.com`)
-      - traefik.http.routers.next-app.entrypoints=websecure
-      - traefik.http.routers.next-app.tls.certResolver=letsencrypt
-      - traefik.http.services.next-app.loadbalancer.server.port=9000
+    # labels:
+    #   - traefik.enable=true
+    #   - traefik.http.routers.next-app.rule=Host(`laravel.nikasyraf.com`)
+    #   - traefik.http.routers.next-app.entrypoints=websecure
+    #   - traefik.http.routers.next-app.tls.certResolver=letsencrypt
+    #   - traefik.http.services.next-app.loadbalancer.server.port=9000
   queue-worker:
     build:
       context: ./backend
