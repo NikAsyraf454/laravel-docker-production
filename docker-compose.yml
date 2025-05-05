@@ -13,7 +13,7 @@ services:
     volumes:
       - storage:/usr/share/nginx/html/storage:rw
       - public:/usr/share/nginx/html/public:rw
-      # - ./backend:/usr/share/nginx/html
+      - ./backend:/usr/share/nginx/html
       - ./.env:/usr/share/nginx/html/.env:ro
     networks:
       - dokploy-network
