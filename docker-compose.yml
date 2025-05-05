@@ -96,7 +96,7 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     ports:
-      - 9000:9000 # This port is for internal Docker network communication
+      - 8000:8000 # This port is for internal Docker network communication
     depends_on:
       - db
     env_file:
@@ -112,7 +112,7 @@ services:
       - traefik.http.routers.next-app.rule=Host(`laravel.nikasyraf.com`)
       - traefik.http.routers.next-app.entrypoints=websecure
       - traefik.http.routers.next-app.tls.certResolver=letsencrypt
-      - traefik.http.services.next-app.loadbalancer.server.port=9000 # Traefik forwards to app's port 9000
+      - traefik.http.services.next-app.loadbalancer.server.port=8000 # Traefik forwards to app's port 9000
 
   queue-worker:
     build:
