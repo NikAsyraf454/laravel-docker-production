@@ -37,6 +37,8 @@ services:
     volumes:
       - storage:/usr/share/nginx/html/storage:rw
       - public:/usr/share/nginx/html/public:rw
+    networks:
+      - dokploy-network
   nginx:
     image: nginx:1-alpine
     ports:
@@ -46,6 +48,8 @@ services:
       - ./nginx.conf:/etc/nginx/templates/default.conf.template
       - storage:/usr/share/nginx/html/storage:rw
       - public:/usr/share/nginx/html/public:ro
+    networks:
+      - dokploy-network
   db:
     image: bitnami/postgresql:16.3.0
     platform: linux/amd64
@@ -58,6 +62,8 @@ services:
       - POSTGRESQL_DATABASE=${POSTGRESQL_DATABASE}
       - POSTGRESQL_USERNAME=${POSTGRESQL_USERNAME}
       - POSTGRESQL_PASSWORD=${POSTGRESQL_PASSWORD}
+    networks:
+      - dokploy-network
   redis:
     image: bitnami/redis:7.2
     platform: linux/amd64
@@ -70,9 +76,15 @@ services:
       - ALLOW_EMPTY_PASSWORD=no
       - REDIS_PASSWORD=${REDIS_PASSWORD}
       - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
+    networks:
+      - dokploy-network
 
 volumes:
   storage:
   public:
   db-data:
   redis-data:
+
+networks:
+  dokploy-network:
+    external: true
