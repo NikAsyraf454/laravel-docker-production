@@ -220,7 +220,7 @@ services:
       - dokploy-network
   nginx:
     image: nginx:1-alpine
-    ports:
+    # ports:
       # Map an internal Nginx port to be accessible by Traefik on the network
       # - 80:80 # Example: map internal Nginx port 80 to port 80 on the network
       # Remove the host port mapping as Traefik handles public access
