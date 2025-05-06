@@ -13,6 +13,14 @@ Route::get('/upload', function () {
     return view('upload');
 });
 
+Route::get('/click', function() {
+    dispatch(new \App\Jobs\ProcessClick());
+
+    return response()->json([
+        'click' => true
+    ]);
+});
+
 Route::post('/upload', function (Request $request) {
     $request->validate([
         'file' => 'required|file|max:2048', // Max file size: 2MB
