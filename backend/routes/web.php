@@ -4,10 +4,18 @@ use App\Jobs\LogCreatedUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Config;
+use App\Http\Controllers\LikeController;
+
+
 
 Route::get('/', function () {
     return ['Laravel' => app()->version(), 'env' => Config::get('APP_ENV')];
 });
+
+Route::get('/', function () {
+    return view('like');
+});
+Route::post('/like', [LikeController::class, 'like']);
 
 Route::get('/upload', function () {
     return view('upload');
