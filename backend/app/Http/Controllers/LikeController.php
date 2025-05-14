@@ -13,11 +13,12 @@ class LikeController extends Controller
     public function like()
     {
         // In a real application, you would update your database here
+        Log::info(self::$currentLikes);
         self::$currentLikes++;
+        Log::info(self::$currentLikes);
 
         // Dispatch the event
-        event(new LikeCountUpdated(self::$currentLikes));
-        Log::info("Like once");
+        broadcast(new LikeCountUpdated(self::$currentLikes));
 
         return response()->json(['status' => 'success', 'likes' => self::$currentLikes]);
     }

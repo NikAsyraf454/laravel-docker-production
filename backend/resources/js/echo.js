@@ -1,3 +1,6 @@
+console.log('Echo JS loaded');
+console.log('VITE_REVERB_APP_KEY:', import.meta.env.VITE_REVERB_APP_KEY);
+
 import Echo from 'laravel-echo';
 
 import Pusher from 'pusher-js';
