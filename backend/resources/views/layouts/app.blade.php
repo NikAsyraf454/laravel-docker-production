@@ -159,7 +159,7 @@
                 .listen('.like.updated', (e) => {
                     console.log("like +1");
                     // Show a success toast
-                    showToast('Like_count updated!');
+                    showToast('LikeCount updated!');
                 });
         });
     </script>
